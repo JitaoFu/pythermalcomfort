@@ -148,7 +148,7 @@ def sports_heat_stress_risk(
         result = sports_heat_stress_risk(
             tdb=35, tr=35, rh=40, vr=0.1, sport=Sports.RUNNING
         )
-        print(result.risk_level_interpolated)  # 3.0 (Extreme risk)
+        print(result.risk_level_interpolated)  # 4.0 (Extreme risk)
         print(result.t_medium)  # 23.0 (Temperature threshold for medium risk)
         print(result.t_high)  # 25.0 (Temperature threshold for high risk)
         print(result.t_extreme)  # 28.6 (Temperature threshold for extreme risk)
@@ -237,22 +237,22 @@ def _calc_risk_single_value(
     t_cr_extreme = 40  # core temperature for extreme risk
 
     if tdb < min_t_medium:
-        # Low risk - use default thresholds and risk level 0
+        # Low risk - use default thresholds and risk level 1
         return (
-            0.0,
+            1.0,
             min_t_medium,
             min_t_high,
             min_t_extreme,
-            _get_recommendation(0.0),
+            _get_recommendation(1.0),
         )
     if tdb > max_t_high:
-        # Extreme risk - use maximum thresholds and risk level 3
+        # Extreme risk - use maximum thresholds and risk level 4
         return (
-            3.0,
+            4.0,
             max_t_low,
             max_t_medium,
             max_t_high,
-            _get_recommendation(3.0),
+            _get_recommendation(4.0),
         )
 
     def calculate_threshold_water_loss(x):
@@ -347,13 +347,13 @@ def _calc_risk_single_value(
     risk_level_interpolated = np.nan
     # calculate the risk level with one decimal place
     if min_t_low <= tdb < t_medium:
-        risk_level_interpolated = (tdb - min_t_medium) / (t_medium - min_t_medium)
+        risk_level_interpolated = 1.0 + (tdb - min_t_medium) / (t_medium - min_t_medium)
     elif t_medium <= tdb < t_high:
-        risk_level_interpolated = 1.0 + (tdb - t_medium) / (t_high - t_medium)
+        risk_level_interpolated = 2.0 + (tdb - t_medium) / (t_high - t_medium)
     elif t_high <= tdb < t_extreme:
-        risk_level_interpolated = 2.0 + (tdb - t_high) / (t_extreme - t_high)
+        risk_level_interpolated = 3.0 + (tdb - t_high) / (t_extreme - t_high)
     elif tdb >= t_extreme:
-        risk_level_interpolated = 3.0
+        risk_level_interpolated = 4.0
 
     if np.isnan(risk_level_interpolated):
         raise ValueError("Risk level could not be determined due to NaN thresholds.")
@@ -379,7 +379,7 @@ def _get_recommendation(risk_level: float) -> str:
     Parameters
     ----------
     risk_level : float
-        Interpolated risk level (0.0-3.0).
+        Interpolated risk level (1.0-4.0).
 
     Returns
     -------
@@ -387,11 +387,11 @@ def _get_recommendation(risk_level: float) -> str:
         Evidence-based recommendation text for managing heat stress at the given
         risk level.
     """
-    if risk_level < 1.0:
+    if risk_level < 2.0:
         return "Increase hydration & modify clothing"
-    elif risk_level < 2.0:
-        return "Increase frequency and/or duration of rest breaks"
     elif risk_level < 3.0:
+        return "Increase frequency and/or duration of rest breaks"
+    elif risk_level < 4.0:
         return "Apply active cooling strategies"
     else:
         return "Consider suspending play"
