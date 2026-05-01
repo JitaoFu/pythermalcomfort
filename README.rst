@@ -178,11 +178,8 @@ Production release (PyPI)
     git pull --ff-only
     git fetch --tags --prune
 
-    # if you are finalizing an rc release, promote rc -> final
-    bump-my-version bump pre_l
-
-    # or make a direct final release bump
-    # bump-my-version bump patch   # or minor / major
+    # finalize an rc to stable release
+    bump-my-version bump patch     # or minor / major for a fresh release
 
     # publish commit and tag (tag push triggers PyPI release workflow)
     git push
@@ -200,10 +197,10 @@ to PyPI.
     git pull --ff-only
     git fetch --tags --prune
 
-    # start rc cycle for next patch release
+    # start rc cycle for next patch (creates e.g. 3.9.6rc1)
     bump-my-version bump patch
 
-    # iterate rc builds while testing
+    # iterate rc builds while testing (rc1 -> rc2 -> rc3 ...)
     bump-my-version bump pre_n
 
     # publish commit and tag (tag push triggers TestPyPI release workflow)
