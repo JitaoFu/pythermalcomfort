@@ -12,6 +12,13 @@ import numpy as np
 
 from pythermalcomfort.utilities import Postures, Sex, Units, validate_type
 
+NumericInput = float | int | np.ndarray | list
+_NUMERIC_TYPES = NumericInput.__args__
+
+
+def numeric_field(default=None):
+    return field(default=default, metadata={"types": _NUMERIC_TYPES})
+
 
 class WorkIntensity(str, Enum):
     """Enumeration for work intensity levels."""
@@ -26,49 +33,23 @@ class BaseInputs:
     """Base inputs with metadata-driven validation."""
 
     a_coefficient: float | int = field(default=None, metadata={"types": (float, int)})
-    age: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    age: NumericInput = numeric_field()
     airspeed_control: bool = field(default=True, metadata={"is_bool": True})
-    asw: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    body_surface_area: float | int | np.ndarray | list = field(
-        default=1.8258, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    clo: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    d: float | int | np.ndarray | list = field(
-        default=0, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    asw: NumericInput = numeric_field()
+    body_surface_area: NumericInput = numeric_field(1.8258)
+    clo: NumericInput = numeric_field()
+    d: NumericInput = numeric_field(0)
     duration: int = field(default=None, metadata={"types": (int, np.ndarray)})
     e_coefficient: float | int = field(default=None, metadata={"types": (float, int)})
-    f_bes: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    f_svv: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    floor_reflectance: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    height: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    f_bes: NumericInput = numeric_field()
+    f_svv: NumericInput = numeric_field()
+    floor_reflectance: NumericInput = numeric_field()
+    height: NumericInput = numeric_field()
     limit_inputs: bool = field(default=True, metadata={"is_bool": True})
-    max_skin_blood_flow: float | int | np.ndarray | list = field(
-        default=80, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    max_sweating: float | int | np.ndarray | list = field(
-        default=500, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    met: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    p_atm: float | int | np.ndarray | list = field(
-        default=101325, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    max_skin_blood_flow: NumericInput = numeric_field(80)
+    max_sweating: NumericInput = numeric_field(500)
+    met: NumericInput = numeric_field()
+    p_atm: NumericInput = numeric_field(101325)
     position: str | np.ndarray | list = field(
         default=None,
         metadata={
@@ -89,102 +70,44 @@ class BaseInputs:
             ]
         },
     )
-    q: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    rh: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    q: NumericInput = numeric_field()
+    rh: NumericInput = numeric_field()
     round_output: bool = field(default=True, metadata={"is_bool": True})
     sex: str | np.ndarray | list = field(
         default=None, metadata={"allowed": [Sex.male.value, Sex.female.value]}
     )
-    sharp: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    sol_altitude: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    sol_radiation_dir: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    sol_radiation_global: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    sol_transmittance: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    t_re: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    t_running_mean: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    t_sk: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    tdb: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    tg: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    thickness_quilt: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    tout: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    tr: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    twb: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    sharp: NumericInput = numeric_field()
+    sol_altitude: NumericInput = numeric_field()
+    sol_radiation_dir: NumericInput = numeric_field()
+    sol_radiation_global: NumericInput = numeric_field()
+    sol_transmittance: NumericInput = numeric_field()
+    t_re: NumericInput = numeric_field()
+    t_running_mean: NumericInput = numeric_field()
+    t_sk: NumericInput = numeric_field()
+    tdb: NumericInput = numeric_field()
+    tg: NumericInput = numeric_field()
+    thickness_quilt: NumericInput = numeric_field()
+    tout: NumericInput = numeric_field()
+    tr: NumericInput = numeric_field()
+    twb: NumericInput = numeric_field()
     units: str = field(default=Units.SI.value)
-    v: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    v_ankle: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    v_z1: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    vapor_pressure: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    vertical_tmp_grad: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    vr: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    w_max: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    wbgt: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    weight: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    v: NumericInput = numeric_field()
+    v_ankle: NumericInput = numeric_field()
+    v_z1: NumericInput = numeric_field()
+    vapor_pressure: NumericInput = numeric_field()
+    vertical_tmp_grad: NumericInput = numeric_field()
+    vr: NumericInput = numeric_field()
+    w_max: NumericInput = numeric_field()
+    wbgt: NumericInput = numeric_field()
+    weight: NumericInput = numeric_field()
     with_solar_load: bool = field(default=False, metadata={"is_bool": True})
     work_intensity: str | Enum = field(
         default=None, metadata={"allowed": [i.value for i in WorkIntensity]}
     )
-    z0: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    z1: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    z2: float | int | np.ndarray | list = field(
-        default=None, metadata={"types": (float, int, np.ndarray, list)}
-    )
-    wme: float | int | np.ndarray | list = field(
-        default=0, metadata={"types": (float, int, np.ndarray, list)}
-    )
+    z0: NumericInput = numeric_field()
+    z1: NumericInput = numeric_field()
+    z2: NumericInput = numeric_field()
+    wme: NumericInput = numeric_field(0)
 
     def __post_init__(self) -> None:
         """Validate and normalize fields using metadata declared on each field."""
@@ -1244,7 +1167,8 @@ class ScaleWindSpeedLogInputs(BaseInputs):
 
 @dataclass
 class SportsHeatStressInputs(BaseInputs):
-    """Inputs for :func:`pythermalcomfort.models.sports_heat_stress_risk.sports_heat_stress_risk`.
+    """Inputs for
+    :func:`pythermalcomfort.models.sports_heat_stress_risk.sports_heat_stress_risk`.
 
     Parameters
     ----------
