@@ -10,7 +10,7 @@ from pythermalcomfort.shared_functions import _finalize_scalar_or_array, mapping
 from pythermalcomfort.utilities import (
     Models,
     Units,
-    _check_standard_compliance_array,
+    _check_ashrae55_compliance,
     units_converter,
 )
 
@@ -202,14 +202,14 @@ def pmv_ppd_ashrae(
             v_valid,
             met_valid,
             clo_valid,
-        ) = _check_standard_compliance_array(
-            standard=Models.ashrae_55_2023.value,
+        ) = _check_ashrae55_compliance(
             tdb=tdb,
             tr=tr,
             v=vr,
             met=met,
             clo=clo,
             airspeed_control=airspeed_control,
+            v_param_name="vr",
         )
         all_valid = ~(
             np.isnan(tdb_valid)

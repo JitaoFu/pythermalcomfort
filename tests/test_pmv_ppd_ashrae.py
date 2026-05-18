@@ -212,7 +212,7 @@ class TestPmvPpd:
         """airspeed_control=False: v > 0.8 with low clo and met triggers UserWarning."""
         # to ≈ 26 > 25.5, so only cond1 applies: v=0.9 > 0.8, clo=0.5 < 0.7, met=1.1 < 1.3
         with pytest.warns(
-            UserWarning, match=r"airspeed_control=False.*exceed 0\.8 m/s"
+            UserWarning, match=r"airspeed_control=False.*exceeding 0\.8 m/s"
         ):
             pmv_ppd_ashrae(
                 tdb=26,
@@ -243,7 +243,9 @@ class TestPmvPpd:
     def test_airspeed_control_false_cond3_warns(self) -> None:
         """airspeed_control=False: v > 0.2 when to <= 23°C triggers UserWarning."""
         # to ≈ 22 <= 23; v=0.3 > 0.2, clo=0.5 < 0.7, met=1.1 < 1.3
-        with pytest.warns(UserWarning, match=r"airspeed_control=False.*0\.2 m/s"):
+        with pytest.warns(
+            UserWarning, match=r"airspeed_control=False.*exceeding 0\.2 m/s"
+        ):
             pmv_ppd_ashrae(
                 tdb=22,
                 tr=22,

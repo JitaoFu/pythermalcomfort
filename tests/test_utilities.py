@@ -4,7 +4,7 @@ import pytest
 from pythermalcomfort.shared_functions import valid_range
 from pythermalcomfort.utilities import (
     Units,
-    _check_standard_compliance_array,
+    _check_ashrae55_compliance,
     body_surface_area,
     clo_area_factor,
     clo_correction_factor_environment,
@@ -370,15 +370,16 @@ class TestValidRange:
     def test_scalar_out_of_range_warns(self) -> None:
         """Scalar value outside range triggers UserWarning with the value."""
         with pytest.warns(
-            UserWarning, match=r"Value of 'tdb' \(50\.0\).*\[10\.0, 40\.0\]"
+            UserWarning, match=r"'tdb' has value 50\.0.*\[10\.0, 40\.0\]"
         ):
             result = valid_range(50.0, (10.0, 40.0), "tdb")
         assert np.isnan(result)
 
     def test_array_out_of_range_warns(self) -> None:
-        """Array with out-of-range values triggers UserWarning with indices and values."""
+        """Array with out-of-range values triggers UserWarning with count, values, and indices."""
         with pytest.warns(
-            UserWarning, match=r"'tdb'.*\[10\.0, 40\.0\].*\[50\.0, 45\.0\].*\[1, 3\]"
+            UserWarning,
+            match=r"'tdb' has 2 values \[50\.0, 45\.0\] at indices \[1, 3\].*\[10\.0, 40\.0\]",
         ):
             result = valid_range([20.0, 50.0, 30.0, 45.0], (10.0, 40.0), "tdb")
         assert np.isnan(result[1]) and np.isnan(result[3])
@@ -390,24 +391,34 @@ class TestValidRange:
         assert len(recwarn) == 0
         assert result == 25.0
 
-    def test_no_param_name_no_warning(self, recwarn) -> None:
-        """Without param_name, no warning is issued even for out-of-range values."""
-        result = valid_range(50.0, (10.0, 40.0))
-        assert len(recwarn) == 0
+    def test_no_param_name_auto_extracts_from_caller(self) -> None:
+        """Without ``param_name``, the caller's variable name is auto-extracted."""
+        tdb = 50.0
+        with pytest.warns(
+            UserWarning, match=r"'tdb' has value 50\.0.*\[10\.0, 40\.0\]"
+        ):
+            result = valid_range(tdb, (10.0, 40.0))
+        assert np.isnan(result)
+
+    def test_no_param_name_literal_falls_back_to_unknown(self) -> None:
+        """Literal first arg cannot be auto-named; warning falls back to ``<unknown>``."""
+        with pytest.warns(
+            UserWarning, match=r"'<unknown>' has value 50\.0.*\[10\.0, 40\.0\]"
+        ):
+            result = valid_range(50.0, (10.0, 40.0))
         assert np.isnan(result)
 
 
-class TestCheckStandardComplianceArray:
-    """Tests for _check_standard_compliance_array warning behaviour (airspeed_control=False)."""
+class TestCheckAshrae55Compliance:
+    """Tests for _check_ashrae55_compliance warning behaviour (airspeed_control=False)."""
 
     def test_airspeed_control_cond1_warns(self) -> None:
         """cond1: v > 0.8 with clo < 0.7 and met < 1.3 triggers UserWarning.
 
         tdb=tr=30 → to=30 > 25.5, so cond2 does not trigger alongside cond1.
         """
-        with pytest.warns(UserWarning, match=r"exceed 0.8 m/s") as record:
-            _check_standard_compliance_array(
-                "55-2023",
+        with pytest.warns(UserWarning, match=r"exceeding 0\.8 m/s") as record:
+            _check_ashrae55_compliance(
                 tdb=np.float64(30),
                 tr=np.float64(30),
                 v=np.float64(1.0),
@@ -423,8 +434,7 @@ class TestCheckStandardComplianceArray:
         With tdb=tr=24, to=24; v_limit ≈ 0.32; v=0.5 > v_limit triggers cond2.
         """
         with pytest.warns(UserWarning, match=r"comfort zone"):
-            _check_standard_compliance_array(
-                "55-2023",
+            _check_ashrae55_compliance(
                 tdb=np.float64(24),
                 tr=np.float64(24),
                 v=np.float64(0.5),
@@ -439,8 +449,7 @@ class TestCheckStandardComplianceArray:
         With tdb=tr=22, to=22 <= 23; v=0.3 > 0.2 triggers cond3.
         """
         with pytest.warns(UserWarning, match=r"operative temperature is ≤ 23°C"):
-            _check_standard_compliance_array(
-                "55-2023",
+            _check_ashrae55_compliance(
                 tdb=np.float64(22),
                 tr=np.float64(22),
                 v=np.float64(0.3),
@@ -451,8 +460,7 @@ class TestCheckStandardComplianceArray:
 
     def test_airspeed_control_true_no_condition_warning(self, recwarn) -> None:
         """airspeed_control=True skips cond1/cond2/cond3 checks even when v=1.0."""
-        _check_standard_compliance_array(
-            "55-2023",
+        _check_ashrae55_compliance(
             tdb=np.float64(25),
             tr=np.float64(25),
             v=np.float64(1.0),

@@ -68,7 +68,7 @@ def heat_index_rothfusz(
 
     # heat index should only be calculated for temperatures above 27 °C
     if limit_inputs:
-        tdb_valid = valid_range(tdb, (27.0, np.inf), "tdb")
+        tdb_valid = valid_range(tdb, (27.0, np.inf))
         hi_valid = np.where(~np.isnan(tdb_valid), hi, np.nan)
     else:
         hi_valid = hi

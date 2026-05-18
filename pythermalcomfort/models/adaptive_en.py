@@ -105,7 +105,7 @@ def adaptive_en(
     t_cmf = 0.33 * t_running_mean + 18.8
 
     if limit_inputs:
-        trm_valid = valid_range(t_running_mean, (10.0, 33.5), "t_running_mean")
+        trm_valid = valid_range(t_running_mean, (10.0, 33.5))
         all_valid = ~(np.isnan(trm_valid))
         t_cmf = np.where(all_valid, t_cmf, np.nan)
 

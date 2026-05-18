@@ -40,7 +40,7 @@ def test_below_threshold_produces_nan() -> None:
 
 def test_below_threshold_warns_scalar() -> None:
     """Scalar tdb below 27°C triggers a UserWarning with the specific value."""
-    with pytest.warns(UserWarning, match=r"Value of 'tdb' \(25\.0\).*\[27\.0, inf\]"):
+    with pytest.warns(UserWarning, match=r"'tdb' has value 25\.0.*\[27\.0, inf\]"):
         heat_index_rothfusz(tdb=25, rh=80)
 
 

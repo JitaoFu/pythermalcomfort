@@ -8,7 +8,7 @@ from pythermalcomfort.models.pmv_ppd_ashrae import pmv_ppd_ashrae
 from pythermalcomfort.utilities import (
     Models,
     Units,
-    _check_standard_compliance_array,
+    _check_ashrae55_compliance,
     units_converter,
 )
 
@@ -112,14 +112,14 @@ def ankle_draft(
         tdb, tr, vr, v_ankle = units_converter(tdb=tdb, tr=tr, vr=vr, vel=v_ankle)
 
     tdb_valid, tr_valid, v_valid, met_valid, clo_valid, v_limited = (
-        _check_standard_compliance_array(
-            standard=Models.ashrae_55_2023.value,
+        _check_ashrae55_compliance(
             tdb=tdb,
             tr=tr,
             v_limited=vr,
             v=vr,
             met=met,
             clo=clo,
+            v_param_name="vr",
         )
     )
 
