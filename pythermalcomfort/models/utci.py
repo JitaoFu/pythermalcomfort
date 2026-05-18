@@ -46,7 +46,7 @@ def utci(
         By default, if the inputs are outside the standard applicability limits the
         function returns nan. If False, returns UTCI values even if input values are
         outside the applicability limits of the model. The valid input ranges are
-        -50 < tdb [°C] < 50, tdb - 70 < tr [°C] < tdb + 30, and for 0.5 < v [m/s] < 17.0. Defaults to True.
+        -50 < tdb [°C] < 50, tdb - 30 < tr [°C] < tdb + 70, and for 0.5 < v [m/s] < 17.0. Defaults to True.
     round_output : bool, optional
         If True, rounds output value. If False, it does not round it. Defaults to True.
 
@@ -120,6 +120,9 @@ def utci(
         all_valid = ~(np.isnan(tdb_valid) | np.isnan(diff_valid) | np.isnan(v_valid))
         utci_approx = np.where(all_valid, utci_approx, np.nan)
 
+    # Stress-category thresholds are in °C; keep the SI value before IP conversion.
+    utci_si = utci_approx
+
     if units.upper() == Units.IP.value:
         utci_approx = units_converter(
             tmp=utci_approx,
@@ -141,10 +144,11 @@ def utci(
 
     if round_output:
         utci_approx = np.round(utci_approx, 1)
+        utci_si = np.round(utci_si, 1)
 
     return UTCI(
         utci=utci_approx,
-        stress_category=mapping(utci_approx, stress_categories),
+        stress_category=mapping(utci_si, stress_categories),
     )
 
 
